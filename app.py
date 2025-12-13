@@ -2,62 +2,24 @@ import streamlit as st
 import pickle
 import numpy as np
 
-st.set_page_config(
-    page_title="House Price Prediction",
-    page_icon="🏠",
-    layout="centered"
-)
+# Load the trained model
+with open("/mnt/data/LR_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
-# -------- Load pickle safely --------
-with open("saldf.pkl", "rb") as f:
-    obj = pickle.load(f)
+# App title
+st.title("House Price Prediction App")
 
-model = None
-scaler = None
+# Input fields
+st.header("Enter the house details:")
+sqft_living = st.number_input("Square Footage of Living Area (sqft)", min_value=100, max_value=20000, value=1500)
+bedrooms = st.number_input("Number of Bedrooms", min_value=1, max_value=20, value=3)
+bathrooms = st.number_input("Number of Bathrooms", min_value=1.0, max_value=10.0, value=2.0)
+yr_built = st.number_input("Year Built", min_value=1800, max_value=2025, value=2000)
 
-# Case 1: sklearn Pipeline
-if hasattr(obj, "predict"):
-    model = obj
-
-# Case 2: tuple (model, scaler)
-elif isinstance(obj, tuple):
-    model = obj[0]
-    if len(obj) > 1:
-        scaler = obj[1]
-
-# Case 3: dictionary
-elif isinstance(obj, dict):
-    if "model" in obj:
-        model = obj["model"]
-    if "scaler" in obj:
-        scaler = obj["scaler"]
-
-# If still not found
-if model is None:
-    st.error("❌ Could not extract model from saldf.pkl")
-    st.stop()
-
-# -------- UI --------
-st.title("🏠 House Price Prediction")
-st.write("Predict house prices using Linear Regression")
-
-st.divider()
-
-st.subheader("📊 Enter House Details")
-
-bedrooms = st.number_input("Number of Bedrooms", min_value=0, step=1)
-bathrooms = st.number_input("Number of Bathrooms", min_value=0.0, step=0.5)
-sqft_living = st.number_input("Living Area (sqft)", min_value=0)
-
-# -------- Prediction --------
+# Predict button
 if st.button("Predict Price"):
-    X = np.array([[bedrooms, bathrooms, sqft_living]])
-
-    if scaler is not None:
-        X = scaler.transform(X)
-
-    prediction = model.predict(X)
-
-    st.divider()
-    st.subheader("💰 Predicted House Price")
-    st.success(f"₹ {prediction[0]:,.2f}")
+    # Prepare input array
+    input_data = np.array([[sqft_living, bedrooms, bathrooms, yr_built]])
+    # Make prediction
+    prediction = model.predict(input_data)
+    st.success(f"Estimated House Price: ${prediction[0]:,.2f}")
