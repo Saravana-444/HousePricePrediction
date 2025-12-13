@@ -36,5 +36,7 @@ st.subheader("📊 Enter House Details")
 
 # ⚠️ Change feature names ONLY if your dataset is different
 bedrooms = st.number_input("Number of Bedrooms", min_value=0, step=1)
-bathrooms = st.number_input("N_
+bathrooms = st.number_input("Number of Bathrooms", min_value=0.0, step=0.5)
+sqft_living = st.number_input("Living Area (sqft)", min_value=0)
+
 
