@@ -2,30 +2,39 @@ import streamlit as st
 import pickle
 import numpy as np
 
+# ---------------- Page Config ----------------
 st.set_page_config(
-    page_title="House Prediction App",
-    page_icon="📈",
+    page_title="House Price Prediction",
+    page_icon="🏠",
     layout="centered"
 )
 
-# Load model
+# ---------------- Load Model ----------------
 with open("saldf.pkl", "rb") as file:
-    model = pickle.load(file)
+    loaded = pickle.load(file)
 
-st.title("📈 Linear Regression Prediction App")
-st.write("Enter input values to predict the output")
+# Handle different saved formats
+scaler = None
+
+if isinstance(loaded, tuple):
+    model = loaded[0]
+    if len(loaded) > 1:
+        scaler = loaded[1]
+elif hasattr(loaded, "predict"):
+    model = loaded
+else:
+    st.error("❌ Unsupported model format in saldf.pkl")
+    st.stop()
+
+# ---------------- UI ----------------
+st.title("🏠 House Price Prediction App")
+st.write("Predict house prices using Linear Regression")
 
 st.divider()
 
-st.subheader("🔢 Input Features")
+st.subheader("📊 Enter House Details")
 
-# ⚠️ Change feature count if needed
-feature1 = st.number_input("Feature 1", value=0.0)
-feature2 = st.number_input("Feature 2", value=0.0)
-feature3 = st.number_input("Feature 3", value=0.0)
+# ⚠️ Change feature names ONLY if your dataset is different
+bedrooms = st.number_input("Number of Bedrooms", min_value=0, step=1)
+bathrooms = st.number_input("N_
 
-if st.button("Predict"):
-    input_data = np.array([[feature1, feature2, feature3]])
-    prediction = model.predict(input_data)
-
-    st.success(f"Predicted Value: {prediction[0]:.2f}")
