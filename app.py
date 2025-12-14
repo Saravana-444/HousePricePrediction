@@ -22,4 +22,4 @@ yr_built = st.number_input("Year Built", min_value=1800, max_value=2025, value=2
 if st.button("Predict Price"):
     input_features = np.array([[sqft_living, bedrooms, bathrooms, yr_built]])
     predicted_price = model.predict(input_features)[0]
-    st.success(f"Estimated House Price: ${predicted_price:,.2f}")
+    st.success(f"Estimated House Price: ₹{predicted_price:,.2f}")
